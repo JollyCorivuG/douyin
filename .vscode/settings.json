@@ -1,0 +1,16 @@
+{
+    "editor.fontFamily": "Fira Code",
+    "editor.fontLigatures": true,
+    "git.ignoreLimitWarning": true,
+    "window.dialogStyle": "custom",
+    "files.autoGuessEncoding": true,
+    "go.goroot": "",
+    "go.gopath": "",
+    "go.inferGopath": false,
+    "go.autocompleteUnimportedPackages": true,
+    "go.gocodePackageLookupMode": "go",
+    "go.gotoSymbol.includeImports": true,
+    "go.useCodeSnippetsOnFunctionSuggest": true,
+    "go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
+    "go.docsTool": "gogetdoc"
+}

@@ -1,0 +1,23 @@
+# 服务器ip和启动端口号
+[server]
+ip = "192.168.1.8"
+port = 8080
+
+# mysql配置
+[mysql]
+username = "root"
+password = "jhc"
+host = "127.0.0.1"
+port = 3306
+database = "golang_db"
+charset = "utf8mb4"
+parse_time = true
+loc = "Local"
+
+# redis配置
+[redis]
+host = "127.0.0.1"
+port = 6379
+password = ""
+database = 0
+
