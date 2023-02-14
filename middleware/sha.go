@@ -9,35 +9,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	minUserNameLen = 3
-	maxUserNameLen = 32
-
-	minPassWordLen = 5
-	maxPassWordLen = 32
-)
-
 // 使用sha1对密码进行加密
-func sha(s string) string {
+func sha(s string) (string, error) {
 	hash := sha1.New()
-	hash.Write([]byte(s))
-	return hex.EncodeToString(hash.Sum(nil))
+	if _, err := hash.Write([]byte(s)); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
 func ShaMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userName := c.Query("username")
-		passWord := c.Query("password")
+		rawPassWord := c.Query("password")
 
-		if len(userName) < minUserNameLen || len(userName) > maxUserNameLen || len(passWord) < minPassWordLen || len(passWord) > maxPassWordLen {
+		passWord, err := sha(rawPassWord)
+		if err != nil {
 			c.JSON(http.StatusOK, common.CommonResponse{
 				StatusCode: 403,
-				StatusMsg:  "输入的用户名或密码不合法",
+				StatusMsg: err.Error(),
 			})
 			c.Abort()
 			return
 		}
-		c.Set("password", sha(passWord))
+
+		c.Set("password", passWord)
 		c.Next()
 	}
 }

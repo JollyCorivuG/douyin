@@ -1,11 +1,9 @@
 package user_handler
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/example"
-	"douyin/model/system"
-	"douyin/utils"
+	"douyin/service/user_service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,57 +33,23 @@ func RegisterHandler(c *gin.Context) {
 		return
 	}
 
-	// 用户名已经存在
-	if dao.DbMgr.IsUserExistByUserName(userName) {
+	// 调用服务
+	access, err := user_service.Server.DoRegister(userName, passWord)
+	if err != nil {
 		c.JSON(http.StatusOK, registerResponse{
 			CommonResponse: common.CommonResponse{
 				StatusCode: 2,
-				StatusMsg:  "注册的用户名已经存在",
-			},
-		})
-		return
-	}
-
-	// 创建一个用户
-	userInfo := new(system.UserInfo)
-	userInfo.UserName = userName
-	userInfo.PassWord = passWord
-	userId, err := utils.GenerateId()
-	// 生成id时出错
-	if err != nil {
-		c.JSON(http.StatusOK, registerResponse{
-			CommonResponse: common.CommonResponse{
-				StatusCode: 3,
 				StatusMsg:  err.Error(),
 			},
 		})
 		return
 	}
-	userInfo.UserId = userId
 
-	tokenString, err := utils.ReleaseToken(userInfo.UserId)
-	// 生成token时出错
-	if err != nil {
-		c.JSON(http.StatusOK, registerResponse{
-			CommonResponse: common.CommonResponse{
-				StatusCode: 4,
-				StatusMsg:  err.Error(),
-			},
-		})
-	}
-
-	// 注册成功
 	c.JSON(http.StatusOK, registerResponse{
 		CommonResponse: common.CommonResponse{
 			StatusCode: 0,
 			StatusMsg:  "注册成功",
 		},
-		Access: &example.Access{
-			UserId: userInfo.UserId,
-			Token:  tokenString,
-		},
+		Access: access,
 	})
-
-	// 将用户信息存入数据库
-	dao.DbMgr.AddUser(userInfo)
 }

@@ -1,9 +1,9 @@
 package user_handler
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/system"
+	"douyin/service/user_service"
 	"net/http"
 	"strconv"
 
@@ -42,7 +42,7 @@ func LikeListHandler(c *gin.Context) {
 	}
 
 	// 在数据库查询userId点赞的视频列表 (后期封装到service层)
-	videos, err := dao.DbMgr.QueryLikeVideosByUserId(userId)
+	videos, err := user_service.Server.DoLikeList(userId)
 	if err != nil {
 		c.JSON(http.StatusOK, likeListResponse{
 			CommonResponse: common.CommonResponse{
@@ -51,21 +51,6 @@ func LikeListHandler(c *gin.Context) {
 			},
 		})
 		return
-	}
-
-	// 为videos添加author和is_false信息
-	for index := range videos {
-		videos[index].VideoAuthor, err = dao.DbMgr.QueryUserByUserId(videos[index].AuthorId)
-		if err != nil {
-			c.JSON(http.StatusOK, likeListResponse{
-				CommonResponse: common.CommonResponse{
-					StatusCode: 4,
-					StatusMsg:  err.Error(),
-				},
-			})
-			return
-		}
-		videos[index].IsFavorite = true
 	}
 
 	// 将数据返回到前端

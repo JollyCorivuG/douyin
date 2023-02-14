@@ -1,9 +1,9 @@
 package user_handler
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/system"
+	"douyin/service/user_service"
 	"net/http"
 	"strconv"
 
@@ -19,7 +19,7 @@ func FollowListHandler(c *gin.Context) {
 	rawUserId, ok1 := c.Get("user_id")
 	userId, ok2 := rawUserId.(int64)
 	if !ok1 || !ok2 {
-		c.JSON(http.StatusOK, likeListResponse{
+		c.JSON(http.StatusOK, followListResponse{
 			CommonResponse: common.CommonResponse{
 				StatusCode: 1,
 				StatusMsg:  "解析id出错",
@@ -32,7 +32,7 @@ func FollowListHandler(c *gin.Context) {
 	userIdString := c.Query("user_id")
 	userIdInt, _ := strconv.ParseInt(userIdString, 10, 64)
 	if userId != userIdInt {
-		c.JSON(http.StatusOK, likeListResponse{
+		c.JSON(http.StatusOK, followListResponse{
 			CommonResponse: common.CommonResponse{
 				StatusCode: 2,
 				StatusMsg:  "user_id和token不一致",
@@ -41,21 +41,16 @@ func FollowListHandler(c *gin.Context) {
 		return
 	}
 
-	// 在数据库查询userId关注的用户列表 (后期封装到service层)
-	users, err := dao.DbMgr.QueryFollowUserByUserId(userId)
+	// 调用服务
+	users, err := user_service.Server.DoFollowList(userId)
 	if err != nil {
-		c.JSON(http.StatusOK, likeListResponse{
+		c.JSON(http.StatusOK, followListResponse{
 			CommonResponse: common.CommonResponse{
 				StatusCode: 3,
 				StatusMsg:  err.Error(),
 			},
 		})
 		return
-	}
-
-	// 为users添加is_follow信息
-	for index := range users {
-		users[index].IsFollow = true
 	}
 
 	// 将数据返回到前端

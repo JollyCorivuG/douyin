@@ -1,9 +1,9 @@
 package user_handler
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/system"
+	"douyin/service/user_service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,36 +15,26 @@ type infoResponse struct {
 }
 
 func InfoHandler(c *gin.Context) {
-	rawId, ok := c.Get("user_id")
+	rawUserId, ok1 := c.Get("user_id")
+	userId, ok2 := rawUserId.(int64)
 
-	// id不存在
-	if !ok {
+	// 解析id出错
+	if !ok1 || !ok2 {
 		c.JSON(http.StatusOK, infoResponse{
 			CommonResponse: common.CommonResponse{
 				StatusCode: 1,
-				StatusMsg:  "id不存在",
-			},
-		})
-		return
-	}
-
-	userId, ok := rawId.(int64)
-	// 解析id出错
-	if !ok {
-		c.JSON(http.StatusOK, infoResponse{
-			CommonResponse: common.CommonResponse{
-				StatusCode: 2,
 				StatusMsg:  "解析id出错",
 			},
 		})
 		return
 	}
 
-	userInfo, err := dao.DbMgr.QueryUserByUserId(userId)
+	// 调用服务
+	user, err := user_service.Server.DoInfo(userId)
 	if err != nil {
 		c.JSON(http.StatusOK, infoResponse{
 			CommonResponse: common.CommonResponse{
-				StatusCode: 3,
+				StatusCode: 2,
 				StatusMsg:  err.Error(),
 			},
 		})
@@ -56,9 +46,6 @@ func InfoHandler(c *gin.Context) {
 			StatusCode: 0,
 			StatusMsg:  "获取用户信息成功",
 		},
-		User: &system.UserInfo{
-			UserId:   userInfo.UserId,
-			UserName: userInfo.UserName,
-		},
+		User: user,
 	})
 }

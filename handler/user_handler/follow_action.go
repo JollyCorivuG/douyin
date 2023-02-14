@@ -1,9 +1,8 @@
 package user_handler
 
 import (
-	"douyin/cache"
-	"douyin/dao"
 	"douyin/model/common"
+	"douyin/service/user_service"
 	"net/http"
 	"strconv"
 
@@ -26,42 +25,14 @@ func FollowActionHandler(c *gin.Context) {
 
 	actionType := c.Query("action_type")
 
-	if followId == followerId {
+	// 调用服务
+	if err := user_service.Server.DoFollowAction(followerId, followId, actionType); err != nil {
 		c.JSON(http.StatusOK, common.CommonResponse{
-			StatusCode: 2,
-			StatusMsg:  "你不需要关注自己",
+			StatusCode: 3,
+			StatusMsg:  err.Error(),
 		})
 		return
 	}
-
-	// 数据库更新操作 (后期封装到service层)
-	if actionType == "1" {
-		if cache.QueryUserIsFollowUser(followerId, followId) {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 2,
-				StatusMsg:  "已经关注,不能重复关注",
-			})
-			return
-		}
-		if err := dao.DbMgr.UpdateUserWhenFollow(followerId, followId); err != nil {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 3,
-				StatusMsg:  err.Error(),
-			})
-			return
-		}
-	} else {
-		if err := dao.DbMgr.UpdateUserWhenCancelFollow(followerId, followId); err != nil {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 3,
-				StatusMsg:  err.Error(),
-			})
-			return
-		}
-	}
-
-	// redis缓存更新
-	cache.UpdateRelationState(followerId, followId, actionType)
 
 	c.JSON(http.StatusOK, common.CommonResponse{
 		StatusCode: 0,

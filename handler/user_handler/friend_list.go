@@ -1,9 +1,9 @@
 package user_handler
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/system"
+	"douyin/service/user_service"
 	"net/http"
 	"strconv"
 
@@ -41,8 +41,8 @@ func FriendListHandler(c *gin.Context) {
 		return
 	}
 
-	// 在数据库查询和userId互相关注的用户(即为好友)列表 (后期封装到service层)
-	users, err := dao.DbMgr.QueryFriendUserByUserId(userId)
+	// 调用服务
+	users, err := user_service.Server.DoFriendList(userId)
 	if err != nil {
 		c.JSON(http.StatusOK, likeListResponse{
 			CommonResponse: common.CommonResponse{
@@ -51,11 +51,6 @@ func FriendListHandler(c *gin.Context) {
 			},
 		})
 		return
-	}
-
-	// 为users添加is_follow信息
-	for index := range users {
-		users[index].IsFollow = true
 	}
 
 	// 将数据返回到前端

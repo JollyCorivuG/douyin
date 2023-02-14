@@ -1,10 +1,9 @@
 package video_hander
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/system"
-	"log"
+	"douyin/service/video_service"
 	"net/http"
 	"strconv"
 
@@ -42,8 +41,8 @@ func ListHandler(c *gin.Context) {
 		return
 	}
 
-	// 在数据库查询authorId为userId的视频 (后期放到service层)
-	videos, err := dao.DbMgr.QueryVideosByUserId(userId)
+	// 调用服务
+	videos, err := video_service.Server.DoList(userId)
 	if err != nil {
 		c.JSON(http.StatusOK, listResponse{
 			CommonResponse: common.CommonResponse{
@@ -52,16 +51,6 @@ func ListHandler(c *gin.Context) {
 			},
 		})
 		return
-	}
-
-	author, err := dao.DbMgr.QueryUserByUserId(userId)
-	if err != nil {
-		log.Println(err)
-	}
-
-	// 给返回的视频列表加上作者
-	for index := range videos {
-		videos[index].VideoAuthor = author
 	}
 
 	// 数据返回给前端

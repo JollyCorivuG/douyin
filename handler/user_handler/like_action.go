@@ -1,9 +1,8 @@
 package user_handler
 
 import (
-	"douyin/cache"
-	"douyin/dao"
 	"douyin/model/common"
+	"douyin/service/user_service"
 	"net/http"
 	"strconv"
 
@@ -29,34 +28,14 @@ func LikeActionHandler(c *gin.Context) {
 	// 得到actionType
 	actionType := c.Query("action_type")
 
-	// 数据库更新操作 (后期封装到service层)
-	if actionType == "1" {
-		if cache.QueryUserIsLikeVideo(userId, videoId) {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 2,
-				StatusMsg:  "已经点赞,不能重复点赞",
-			})
-			return
-		}
-		if err := dao.DbMgr.UpdateVideoWhenLike(userId, videoId); err != nil {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 3,
-				StatusMsg:  err.Error(),
-			})
-			return
-		}
-	} else {
-		if err := dao.DbMgr.UpdateVideoWhenCancelLike(userId, videoId); err != nil {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 3,
-				StatusMsg:  err.Error(),
-			})
-			return
-		}
+	// 调用服务
+	if err := user_service.Server.DoLikeAction(userId, videoId, actionType); err != nil {
+		c.JSON(http.StatusOK, common.CommonResponse{
+			StatusCode: 2,
+			StatusMsg:  err.Error(),
+		})
+		return
 	}
-
-	// redis缓存更新
-	cache.UpdateVideoState(userId, videoId, actionType)
 
 	c.JSON(http.StatusOK, common.CommonResponse{
 		StatusCode: 0,

@@ -1,10 +1,9 @@
 package user_handler
 
 import (
-	"douyin/cache"
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/system"
+	"douyin/service/user_service"
 	"net/http"
 	"strconv"
 
@@ -42,8 +41,8 @@ func FollowerListHandler(c *gin.Context) {
 		return
 	}
 
-	// 在数据库查询关注userId的用户列表 (后期封装到service层)
-	users, err := dao.DbMgr.QueryFollowerUserByUserId(userId)
+	// 调用服务
+	users, err := user_service.Server.DoFollowerList(userId)
 	if err != nil {
 		c.JSON(http.StatusOK, likeListResponse{
 			CommonResponse: common.CommonResponse{
@@ -52,11 +51,6 @@ func FollowerListHandler(c *gin.Context) {
 			},
 		})
 		return
-	}
-
-	// 为users添加is_follow信息
-	for index := range users {
-		users[index].IsFollow = cache.QueryUserIsFollowUser(userId, users[index].UserId)
 	}
 
 	// 将数据返回到前端

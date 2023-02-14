@@ -1,7 +1,6 @@
 package video_hander
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/example"
 	"douyin/service/video_service"
@@ -32,8 +31,8 @@ func FeedHandler(c *gin.Context) {
 		latestTime = time.Unix(0, timeStamp*1e6) // 前端传来的时间戳是以ms为单位的
 	}
 
-	// 从数据库中得到视频, 并返回给前端 (后期封装到service层)
-	videos, err := dao.DbMgr.QueryVideosByLimit(video_service.MaxVideoNum, latestTime)
+	// 调用服务
+	videos, err := video_service.Server.DoFeed(latestTime)
 	if err != nil {
 		c.JSON(http.StatusOK, feedResponse{
 			CommonResponse: common.CommonResponse{
@@ -41,23 +40,6 @@ func FeedHandler(c *gin.Context) {
 				StatusMsg:  err.Error(),
 			},
 		})
-		return
-	}
-
-	// 将视频的作者附上
-	for index := range videos {
-		author, err := dao.DbMgr.QueryUserByUserId(videos[index].AuthorId)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		videos[index].VideoAuthor = author
-	}
-
-	// 本次返回的视频中, 发布最早的时间, 作为下次请求时的latest_time
-	nextTime := time.Now().Unix() / 1e6
-	if videoSize := len(videos); videoSize > 0 {
-		nextTime = videos[videoSize-1].CreateAt.Unix() / 1e6
 	}
 
 	// 把响应返回给前端
@@ -66,9 +48,6 @@ func FeedHandler(c *gin.Context) {
 			StatusCode: 0,
 			StatusMsg:  "推送视频成功",
 		},
-		VideoList: &example.VideoList{
-			Videos:   videos,
-			NextTime: nextTime,
-		},
+		VideoList: videos,
 	})
 }
