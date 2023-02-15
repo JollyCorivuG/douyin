@@ -65,7 +65,7 @@ func InitDataBase() {
 	}
 
 	// 创建表
-	db.AutoMigrate(&system.UserInfo{}, &system.VideoInfo{}, &system.UserLikeVideo{}, &system.UserRelation{}, &system.CommentInfo{}, &system.ChatMessage{})
+	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").AutoMigrate(&system.UserInfo{}, &system.VideoInfo{}, &system.UserLikeVideo{}, &system.UserRelation{}, &system.CommentInfo{}, &system.ChatMessage{})
 
 	// 结构体实现接口
 	DbMgr = &manager{db}

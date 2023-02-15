@@ -56,7 +56,7 @@ func (f *followActionFlow) run() error {
 	}
 
 	// redis缓存更新
-	cache.UpdateVideoState(f.followerId, f.followId, f.actionType)
+	cache.UpdateRelationState(f.followerId, f.followId, f.actionType)
 
 	return nil
 }

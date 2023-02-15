@@ -22,7 +22,7 @@ func FeedHandler(c *gin.Context) {
 	rawTimeStamp, ok2 := c.GetQuery("latest_time")
 	latestTime := time.Now()
 
-	if ok2 || rawTimeStamp != "" {
+	if ok2 || (rawTimeStamp != "" && rawTimeStamp != "0") {
 		// 如果得到了latest_time参数, 就将它解析为int64
 		timeStamp, err := strconv.ParseInt(rawTimeStamp, 10, 64)
 		if err != nil {

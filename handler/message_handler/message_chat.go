@@ -1,9 +1,9 @@
 package message_handler
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
 	"douyin/model/system"
+	"douyin/service/message_service"
 	"net/http"
 	"strconv"
 
@@ -32,8 +32,8 @@ func MessageChatHandler(c *gin.Context) {
 	toUserIdString := c.Query("to_user_id")
 	toUserId, _ := strconv.ParseInt(toUserIdString, 10, 64)
 
-	// 在数据库查询
-	messages, err := dao.DbMgr.QueryChatMessageByFromAndToUserId(userId, toUserId)
+	// 调用服务
+	messages, err := message_service.Server.DoMessageChat(userId, toUserId)
 	if err != nil {
 		c.JSON(http.StatusOK, messageChatResponse{
 			CommonResponse: common.CommonResponse{

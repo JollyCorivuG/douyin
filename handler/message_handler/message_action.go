@@ -1,13 +1,10 @@
 package message_handler
 
 import (
-	"douyin/dao"
 	"douyin/model/common"
-	"douyin/model/system"
-	"douyin/utils"
+	"douyin/service/message_service"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,30 +28,13 @@ func MessageActionHandler(c *gin.Context) {
 
 	content := c.Query("content")
 
-	// 得到参数后, 更新数据库 (后期封装到service层)
-	if actionType == "1" {
-		messageId, err := utils.GenerateId()
-		if err != nil {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 2,
-				StatusMsg:  "生成id出错",
-			})
-			return
-		}
-		chatMessage := &system.ChatMessage{
-			MessageId:  messageId,
-			ToUserId:   toUserId,
-			FromUserId: userId,
-			Content:    content,
-			CreateTime: time.Now().Unix(),
-		}
-		if err := dao.DbMgr.AddChatMessage(chatMessage); err != nil {
-			c.JSON(http.StatusOK, common.CommonResponse{
-				StatusCode: 3,
-				StatusMsg:  err.Error(),
-			})
-			return
-		}
+	// 调用服务
+	if err := message_service.Server.DoMessageAction(userId, toUserId, content, actionType); err != nil {
+		c.JSON(http.StatusOK, common.CommonResponse{
+			StatusCode: 2,
+			StatusMsg:  err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, common.CommonResponse{
