@@ -59,5 +59,6 @@ func (f *messageActionFlow) run() error {
 			return err
 		}
 	}
+
 	return nil
 }

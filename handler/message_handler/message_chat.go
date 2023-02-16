@@ -12,7 +12,7 @@ import (
 
 type messageChatResponse struct {
 	common.CommonResponse
-	messageList []*system.ChatMessage
+	MessageList []*system.ChatMessage `json:"message_list"`
 }
 
 func MessageChatHandler(c *gin.Context) {
@@ -49,7 +49,7 @@ func MessageChatHandler(c *gin.Context) {
 			StatusCode: 0,
 			StatusMsg:  "聊天记录显现成功",
 		},
-		messageList: messages,
+		MessageList: messages,
 	})
 
 }

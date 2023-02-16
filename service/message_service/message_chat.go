@@ -29,7 +29,6 @@ func (f *messageChatFlow) do() ([]*system.ChatMessage, error) {
 	if err := f.run(&messages); err != nil {
 		return nil, err
 	}
-
 	return messages, nil
 }
 
