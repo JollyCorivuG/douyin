@@ -7,6 +7,8 @@ type UserInfo struct {
 	PassWord      string `json:"-" gorm:"not null"`
 	FollowCount   int    `json:"follow_count" gorm:"autoincrement:false"`
 	FollowerCount int    `json:"follower_count" gorm:"autoincrement:false"`
+	WorkCount     int    `json:"work_count" gorm:"autoincrement:false"`
+	FavoriteCount int    `json:"favorite_count" gorm:"autoincrement:false"`
 	IsFollow      bool   `json:"is_follow" gorm:"-"`
 	// PublishVideos []*VideoInfo `json:"-" gorm:"foreignkey:VideoId"`
 }

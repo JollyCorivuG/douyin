@@ -83,7 +83,7 @@ func (f *publishFlow) run() error {
 		Title:       f.title,
 		CreateAt:    time.Now(),
 	}
-	if err := dao.DbMgr.AddVideo(videoInfo); err != nil {
+	if err := dao.DbMgr.AddVideoAndUpdateUser(videoInfo); err != nil {
 		return err
 	}
 

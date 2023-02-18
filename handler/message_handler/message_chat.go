@@ -43,6 +43,7 @@ func MessageChatHandler(c *gin.Context) {
 		})
 		return
 	}
+	// fmt.Printf("messages: %v\n", messages)
 
 	c.JSON(http.StatusOK, messageChatResponse{
 		CommonResponse: common.CommonResponse{

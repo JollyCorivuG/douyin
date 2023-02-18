@@ -26,7 +26,7 @@ type Manager interface {
 	QueryFriendUserByUserId(userId int64) ([]*system.UserInfo, error)
 
 	// 对视频的操作
-	AddVideo(videoInfo *system.VideoInfo) error
+	AddVideoAndUpdateUser(videoInfo *system.VideoInfo) error
 	QueryVideosByLimit(limitNum int, latestTime time.Time) ([]system.VideoInfo, error)
 	QueryVideosByUserId(userId int64) ([]*system.VideoInfo, error)
 	UpdateVideoWhenLike(userId int64, videoId int64) error

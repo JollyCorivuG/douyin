@@ -7,9 +7,17 @@ import (
 	"gorm.io/gorm"
 )
 
-// 添加视频到数据库
-func (dbMgr *manager) AddVideo(videoInfo *system.VideoInfo) error {
-	return dbMgr.DB.Create(videoInfo).Error
+// 添加视频到数据库, 并更新用户信息
+func (dbMgr *manager) AddVideoAndUpdateUser(videoInfo *system.VideoInfo) error {
+	return dbMgr.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(videoInfo).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&system.UserInfo{}).Where("user_id = ?", videoInfo.AuthorId).Update("work_count", gorm.Expr("work_count + 1")).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 // 根据用户限制最新的投稿时间戳返回视频
@@ -37,6 +45,9 @@ func (dbMgr *manager) QueryVideosByUserId(userId int64) ([]*system.VideoInfo, er
 // 用户点赞视频
 func (dbMgr *manager) UpdateVideoWhenLike(userId int64, videoId int64) error {
 	return dbMgr.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&system.UserInfo{}).Where("user_id = ?", userId).Update("favorite_count", gorm.Expr("favorite_count + 1")).Error; err != nil {
+			return err
+		}
 		if err := tx.Model(&system.VideoInfo{}).Where("video_id = ?", videoId).Update("favorite_count", gorm.Expr("favorite_count + 1")).Error; err != nil {
 			return err
 		}
@@ -50,6 +61,9 @@ func (dbMgr *manager) UpdateVideoWhenLike(userId int64, videoId int64) error {
 // 用户取消点赞视频
 func (dbMgr *manager) UpdateVideoWhenCancelLike(userId int64, videoId int64) error {
 	return dbMgr.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&system.UserInfo{}).Where("user_id = ?", userId).Update("favorite_count", gorm.Expr("favorite_count - 1")).Error; err != nil {
+			return err
+		}
 		if err := tx.Model(&system.VideoInfo{}).Where("video_id = ?", videoId).Update("favorite_count", gorm.Expr("favorite_count - 1")).Error; err != nil {
 			return err
 		}
