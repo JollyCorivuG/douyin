@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"douyin/config"
 	"douyin/dao"
 	"fmt"
 	"log"
@@ -25,7 +26,7 @@ var (
 
 // 获取文件路径
 func GetFileUrl(fileName string) string {
-	return fmt.Sprintf("http://%s:%d/static/%s", LocalIPv4(), 8080, fileName)
+	return fmt.Sprintf("http://%s:%d/static/%s", config.Info.Ip, 8080, fileName)
 }
 
 // 根据用户id得到新的文件名

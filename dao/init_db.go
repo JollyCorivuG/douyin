@@ -41,7 +41,7 @@ type Manager interface {
 
 	// 对信息的操作
 	AddChatMessage(chatMessage *system.ChatMessage) error
-	QueryChatMessageByFromAndToUserId(fromUserId int64, toUserId int64) ([]*system.ChatMessage, error)
+	QueryChatMessageByFromAndToUserId(fromUserId int64, toUserId int64, preMsgTime int64) ([]*system.ChatMessage, error)
 }
 
 // 数据库管理者

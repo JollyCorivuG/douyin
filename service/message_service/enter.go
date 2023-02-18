@@ -8,7 +8,7 @@ const (
 
 type MessageServer interface {
 	DoMessageAction(fromUserId int64, toUserId int64, content string, actionType string) error
-	DoMessageChat(fromUserId int64, toUserId int64) ([]*system.ChatMessage, error)
+	DoMessageChat(fromUserId int64, toUserId int64, preMsgTime int64) ([]*system.ChatMessage, error)
 }
 
 type server struct {

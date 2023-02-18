@@ -32,8 +32,11 @@ func MessageChatHandler(c *gin.Context) {
 	toUserIdString := c.Query("to_user_id")
 	toUserId, _ := strconv.ParseInt(toUserIdString, 10, 64)
 
+	preMsgTimeString := c.Query("pre_msg_time")
+	preMsgTime, _ := strconv.ParseInt(preMsgTimeString, 10, 64)
+
 	// 调用服务
-	messages, err := message_service.Server.DoMessageChat(userId, toUserId)
+	messages, err := message_service.Server.DoMessageChat(userId, toUserId, preMsgTime)
 	if err != nil {
 		c.JSON(http.StatusOK, messageChatResponse{
 			CommonResponse: common.CommonResponse{

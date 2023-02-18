@@ -8,9 +8,9 @@ func (dbMgr *manager) AddChatMessage(chatMessage *system.ChatMessage) error {
 }
 
 // 根据发送者和接收者id查询消息
-func (dbMgr *manager) QueryChatMessageByFromAndToUserId(fromUserId int64, toUserId int64) ([]*system.ChatMessage, error) {
+func (dbMgr *manager) QueryChatMessageByFromAndToUserId(fromUserId int64, toUserId int64, preMsgTime int64) ([]*system.ChatMessage, error) {
 	var messageList []*system.ChatMessage
-	if err := dbMgr.DB.Where("from_user_id = ? AND to_user_id = ? OR from_user_id = ? AND to_user_id = ?", fromUserId, toUserId, toUserId, fromUserId).Find(&messageList).Error; err != nil {
+	if err := dbMgr.DB.Where("from_user_id = ? AND to_user_id = ? OR from_user_id = ? AND to_user_id = ?", fromUserId, toUserId, toUserId, fromUserId).Where("create_time > ?", preMsgTime).Find(&messageList).Error; err != nil {
 		return nil, err
 	}
 	return messageList, nil
