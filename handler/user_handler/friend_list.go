@@ -2,7 +2,7 @@ package user_handler
 
 import (
 	"douyin/model/common"
-	"douyin/model/system"
+	"douyin/model/example"
 	"douyin/service/user_service"
 	"net/http"
 	"strconv"
@@ -12,7 +12,7 @@ import (
 
 type friendListResponse struct {
 	common.CommonResponse
-	FriendList []*system.UserInfo `json:"user_list"`
+	FriendList []*example.Friend `json:"user_list"`
 }
 
 func FriendListHandler(c *gin.Context) {
@@ -42,7 +42,7 @@ func FriendListHandler(c *gin.Context) {
 	}
 
 	// 调用服务
-	users, err := user_service.Server.DoFriendList(userId)
+	friends, err := user_service.Server.DoFriendList(userId)
 	if err != nil {
 		c.JSON(http.StatusOK, likeListResponse{
 			CommonResponse: common.CommonResponse{
@@ -59,6 +59,6 @@ func FriendListHandler(c *gin.Context) {
 			StatusCode: 0,
 			StatusMsg:  "好友列表返回成功",
 		},
-		FriendList: users,
+		FriendList: friends,
 	})
 }

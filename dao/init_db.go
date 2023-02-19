@@ -2,6 +2,7 @@ package dao
 
 import (
 	"douyin/config"
+	"douyin/model/example"
 	"douyin/model/system"
 	"log"
 	"time"
@@ -42,6 +43,7 @@ type Manager interface {
 	// 对信息的操作
 	AddChatMessage(chatMessage *system.ChatMessage) error
 	QueryChatMessageByFromAndToUserId(fromUserId int64, toUserId int64, preMsgTime int64) ([]*system.ChatMessage, error)
+	QueryLatestMessageByFromAndToUserId(fromUserId int64, toUserId int64) (example.LatestMessage, error)
 }
 
 // 数据库管理者

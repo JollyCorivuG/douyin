@@ -2,7 +2,7 @@ package user_service
 
 import (
 	"douyin/dao"
-	"douyin/model/system"
+	"douyin/model/example"
 )
 
 // 包含handler层传来的参数
@@ -15,21 +15,21 @@ func newFriendListFlow(userId int64) *friendListFlow {
 	return &friendListFlow{userId: userId}
 }
 
-func (s *server) DoFriendList(userId int64) ([]*system.UserInfo, error) {
+func (s *server) DoFriendList(userId int64) ([]*example.Friend, error) {
 	return newFriendListFlow(userId).do()
 }
 
-func (f *friendListFlow) do() ([]*system.UserInfo, error) {
-	var users []*system.UserInfo
+func (f *friendListFlow) do() ([]*example.Friend, error) {
+	var friends []*example.Friend
 
 	if err := f.checkPara(); err != nil {
 		return nil, err
 	}
-	if err := f.run(&users); err != nil {
+	if err := f.run(&friends); err != nil {
 		return nil, err
 	}
 
-	return users, nil
+	return friends, nil
 }
 
 // 检验参数
@@ -38,7 +38,7 @@ func (f *friendListFlow) checkPara() error {
 	return nil
 }
 
-func (f *friendListFlow) run(users *[]*system.UserInfo) error {
+func (f *friendListFlow) run(friends *[]*example.Friend) error {
 	userList, err := dao.DbMgr.QueryFriendUserByUserId(f.userId)
 	if err != nil {
 		return err
@@ -49,7 +49,18 @@ func (f *friendListFlow) run(users *[]*system.UserInfo) error {
 		userList[index].IsFollow = true
 	}
 
-	*users = userList
+	var friendList []*example.Friend
+
+	// 加上最新信息
+	for _, user := range userList {
+		latestMsg, err := dao.DbMgr.QueryLatestMessageByFromAndToUserId(f.userId, user.UserId)
+		if err != nil {
+			return nil
+		}
+		friendList = append(friendList, &example.Friend{UserInfo: *user, LatestMessage: latestMsg})
+	}
+
+	*friends = friendList
 
 	return nil
 }

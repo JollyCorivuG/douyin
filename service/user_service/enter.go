@@ -22,7 +22,7 @@ type UserServer interface {
 	DoFollowAction(followerId int64, followId int64, actionType string) error
 	DoFollowList(userId int64) ([]*system.UserInfo, error)
 	DoFollowerList(userId int64) ([]*system.UserInfo, error)
-	DoFriendList(userId int64) ([]*system.UserInfo, error)
+	DoFriendList(userId int64) ([]*example.Friend, error)
 }
 
 type server struct {
