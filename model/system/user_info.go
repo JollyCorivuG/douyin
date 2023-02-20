@@ -10,5 +10,6 @@ type UserInfo struct {
 	WorkCount     int    `json:"work_count" gorm:"autoincrement:false"`
 	FavoriteCount int    `json:"favorite_count" gorm:"autoincrement:false"`
 	IsFollow      bool   `json:"is_follow" gorm:"-"`
+	Avatar        string `json:"avatar"`
 	// PublishVideos []*VideoInfo `json:"-" gorm:"foreignkey:VideoId"`
 }

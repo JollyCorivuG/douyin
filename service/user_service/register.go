@@ -67,6 +67,7 @@ func (f *registerFlow) run(access **example.Access) error {
 		UserName: f.userName,
 		PassWord: f.passWord,
 		UserId:   userId,
+		Avatar:   utils.GetFileUrl("user_avatar.jpg"),
 	}
 	if err := dao.DbMgr.AddUser(userInfo); err != nil {
 		return err
