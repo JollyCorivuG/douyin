@@ -1,22 +1,23 @@
-FROM golang:1.19 as build
+FROM golang:1.19
 
-ENV GO111MODULE=on
-ENV GOPROXY=https://goproxy.cn
+# 为我们的镜像设置必要的环境变量
+ENV GO111MODULE=on \
+    GOPROXY=goproxy.io \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
 
-WORKDIR /go/cache
+WORKDIR /project/douyin
 
-ADD go.mod .
-ADD go.sum .
+# 复制go.mod，go.sum并且下载依赖
+COPY go.* ./
 RUN go mod download
 
-WORKDIR /go/release
+RUN apt update && apt install -y ffmpeg
 
-ADD . .
-RUN G00S=linux CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix cgo -o app main.go
+# 复制项目内的所有内容并构建
+COPY . .
+RUN go build -o /project/douyin/build/myapp .
 
-FROM scratch as prod
-
-COPY --from=build /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-COPY --from=build /go/release/app /
-
-CMD ["/app"]
+EXPOSE 8080
+ENTRYPOINT ["/project/douyin/build/myapp"]

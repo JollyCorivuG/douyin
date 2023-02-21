@@ -67,6 +67,6 @@ func GetVideoCover(videoPath string, name string, frameNum int) string {
 		log.Println(err)
 
 	}
-	fmt.Println("debug", videoPath)
+	fmt.Println("debug dasdas", videoPath)
 	return coverName
 }

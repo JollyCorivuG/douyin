@@ -27,7 +27,7 @@ var (
 func init() {
 	rdb = redis.NewClient(
 		&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", config.Info.RedisDb.Host, config.Info.RedisDb.Port),
+			Addr:     fmt.Sprintf("%s:%d", config.Info.Ip, config.Info.RedisDb.Port),
 			Password: config.Info.RedisDb.PassWord,
 			DB:       config.Info.RedisDb.Database,
 		},

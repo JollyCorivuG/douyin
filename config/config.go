@@ -43,7 +43,7 @@ type Config struct {
 var Info Config
 
 func init() {
-	if _, err := toml.DecodeFile("E:\\golearn\\Byte\\douyin\\config\\conf.toml", &Info); err != nil {
+	if _, err := toml.DecodeFile("/project/douyin/config/conf.toml", &Info); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -51,6 +51,6 @@ func init() {
 // mysql连接
 func MysqlDbConnectString() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=%v&loc=%s",
-		Info.MysqlDb.UserName, Info.MysqlDb.PassWord, Info.MysqlDb.Host, Info.MysqlDb.Port, Info.MysqlDb.Database,
+		Info.MysqlDb.UserName, Info.MysqlDb.PassWord, Info.Ip, Info.MysqlDb.Port, Info.MysqlDb.Database,
 		Info.MysqlDb.Charset, Info.MysqlDb.ParseTime, Info.MysqlDb.Loc)
 }
